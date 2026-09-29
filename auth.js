@@ -6,7 +6,8 @@ const Auth = (() => {
   const SITE_ACCESS_PASSWORD = 'NOTES';
 
   const ADMIN_LOOP_SOUND = 'assets/chatbot-sounds/WHEN USER CLICKS ADMIN PANEL BUTTON [SHOULD RUN IN LOOP UNTIL USER RETURNS].mp3';
-  // The named admin-panel alert loops from the confirmation page until returning to the portal.
+  const ADMIN_ALERT_SOUND = 'assets/admin-alert.mp3';
+  // The admin-panel sound loops from the confirmation page until the visitor returns or logs in.
   const getAlertAudio = () => {
     let audio = document.getElementById('admin-alert-sound');
     if (!audio) { audio = document.createElement('audio'); audio.id = 'admin-alert-sound'; audio.src = encodeURI(ADMIN_LOOP_SOUND); audio.preload = 'auto'; document.body.appendChild(audio); }
@@ -20,6 +21,12 @@ const Auth = (() => {
     if (typeof window.SoundFX?.stop === 'function') { window.SoundFX.stop('adminLoop'); return; }
     const audio = document.getElementById('admin-alert-sound');
     if (audio) { audio.loop = false; audio.pause(); audio.currentTime = 0; }
+  };
+  const playWrongAdminPasswordAlert = () => {
+    if (typeof window.SoundFX?.play === 'function') { window.SoundFX.play('adminAlert', true); return; }
+    const audio = new Audio(encodeURI(ADMIN_ALERT_SOUND));
+    audio.preload = 'auto';
+    audio.play().catch(() => {});
   };
 
   // Sub-page shown before the admin password gate: "this page is for admin only, are you sure?"
@@ -66,9 +73,11 @@ const Auth = (() => {
         } catch {
           status.textContent = 'ACCESS DENIED';
           input.value = '';
+          // A wrong visitor password uses the regular failure effect. A wrong
+          // admin password additionally plays the dedicated admin alert asset.
           window.SoundFX?.play('loginFailure');
           API.log(admin ? 'ADMIN_LOGIN_FAILED' : 'LOGIN_FAILED');
-          if (admin) playAdminAlertLoop();
+          if (admin) { playWrongAdminPasswordAlert(); playAdminAlertLoop(); }
         }
       };
     });

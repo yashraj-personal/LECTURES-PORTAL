@@ -25,7 +25,7 @@ For broad AI answers, this project includes a secure **Cloudflare Worker** in `c
 
 1. Create a free Cloudflare account and install Wrangler (`npm install -g wrangler`).
 2. In a terminal, open `cloudflare-worker`, run `wrangler login`, then run `wrangler deploy`.
-3. Copy the resulting `https://...workers.dev` URL into the `endpoint` field in `ai-config.json` at the website root.
+3. The current Worker URL is already configured in `ai-config.json`. After changing `cloudflare-worker/src/index.js`, deploy the Worker with `npx wrangler deploy` from the `cloudflare-worker` folder. The live Worker must be redeployed whenever its model or server code changes.
 4. In `cloudflare-worker/wrangler.toml`, set `ALLOWED_ORIGINS` to your GitHub Pages origin. The included value is `https://yashraj-personal.github.io`.
 5. Commit and publish the root website folder to GitHub Pages. Do not publish the `cloudflare-worker` folder as the Pages site.
 
@@ -33,4 +33,4 @@ The chatbot immediately uses the local tutor when the Worker URL is blank, the n
 
 ## Audio behavior
 
-Chatbot click sounds play after a user click/tap, as required by modern browser autoplay rules. The admin-confirmation screen uses `WHEN USER CLICKS ADMIN PANEL BUTTON [SHOULD RUN IN LOOP UNTIL USER RETURNS].mp3`: it starts when the Admin page opens, continues after **YES** and on a wrong admin password, and stops on **NO**, successful admin login, or return to the portal.
+The chatbot uses only the supplied looping MP4s: `assets/chatbot-animations/minimized.mp4` when minimized and `assets/chatbot-animations/expanded.mp4` when expanded. It has no CSS-generated avatar or chatbot animation; the supplied PNG is used only as the video poster while the media loads. Chatbot click sounds play after a user click/tap, as required by modern browser autoplay rules. The emotion effects are selected for appreciation, laughter, sadness, surprise, and insults. The admin-panel loop starts from the Admin link and continues through the confirmation screen. A wrong admin password plays the separate `assets/admin-alert.mp3`; the loop stops on **NO**, successful admin login, or return to the portal.
